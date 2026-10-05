@@ -148,16 +148,93 @@ function buildDrawer(){
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeCart(); });
 }
 
+
+/* ---------- صفحة تفاصيل المنتج ---------- */
+var detail, inSite = false;
+function imgsOf(p){ return (p.images && p.images.length) ? p.images : (p.img ? [p.img] : []); }
+function hideDetail(){
+  if (!detail) return;
+  detail.hidden = true; detail.textContent = '';
+  document.body.style.overflow = '';
+}
+function closeDetail(){
+  if (inSite) history.back(); else location.replace('#products');
+}
+function showProduct(p){
+  var list = imgsOf(p), cur = 0, startX = null;
+  var main = el('div', {class: 'pd-main'});
+  var thumbsBox = el('div', {class: 'pd-thumbs'});
+  function paint(){
+    main.textContent = '';
+    main.append(list.length ? el('img', {src: list[cur], alt: p.name}) : el('div', {class: 'ph', 'aria-hidden': 'true', text: 'SERA'}));
+    if (p.soldOut) main.append(el('span', {class: 'tag sold', text: 'خلصت'}));
+    if (list.length > 1){
+      main.append(
+        el('button', {class: 'pd-nav prev', type: 'button', 'aria-label': 'الصورة السابقة', text: '›', onclick: function(){ cur = (cur - 1 + list.length) % list.length; paint(); }}),
+        el('button', {class: 'pd-nav next', type: 'button', 'aria-label': 'الصورة التالية', text: '‹', onclick: function(){ cur = (cur + 1) % list.length; paint(); }}));
+    }
+    [].forEach.call(thumbsBox.children, function(b, i){ b.setAttribute('aria-current', String(i === cur)); });
+  }
+  list.forEach(function(u, i){
+    if (list.length < 2) return;
+    thumbsBox.append(el('button', {type: 'button', 'aria-label': 'صورة ' + (i + 1), onclick: function(){ cur = i; paint(); }}, el('img', {src: u, alt: ''})));
+  });
+  main.addEventListener('touchstart', function(e){ startX = e.touches[0].clientX; }, {passive: true});
+  main.addEventListener('touchend', function(e){
+    if (startX == null || list.length < 2) return;
+    var dx = e.changedTouches[0].clientX - startX; startX = null;
+    if (Math.abs(dx) < 40) return;
+    cur = dx < 0 ? (cur + 1) % list.length : (cur - 1 + list.length) % list.length; paint();
+  }, {passive: true});
+  var pr = fmtPrice(p.price), base = waBase();
+  var add = el('button', {class: 'btn full', type: 'button', disabled: !!p.soldOut, text: p.soldOut ? 'خلصت' : 'أضيفي للحقيبة', onclick: function(){ addToCart(p); }});
+  var ask = base ? el('a', {class: 'btn alt full', href: base + '?text=' + encodeURIComponent('أهلاً SERA accessories، عايزة أسأل عن: ' + p.name), target: '_blank', rel: 'noopener', text: 'اسألي عنها على واتساب'}) : null;
+  detail.textContent = '';
+  detail.append(el('div', {class: 'pd-in'},
+    el('button', {class: 'pd-back', type: 'button', text: '→ رجوع للمنتجات', onclick: closeDetail}),
+    el('div', {class: 'pd-grid'},
+      el('div', {}, main, thumbsBox),
+      el('div', {class: 'pd-info'},
+        p.cat ? el('span', {class: 'pd-cat', text: p.cat}) : null,
+        el('h1', {text: p.name}),
+        pr ? el('div', {class: 'pd-price'}, pr + ' ', el('small', {text: 'ج.م'})) : null,
+        p.desc ? el('p', {class: 'pd-desc', text: p.desc}) : null,
+        el('div', {class: 'pd-btns'}, add, ask)))));
+  paint();
+  detail.hidden = false; detail.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+  document.title = p.name + ' | SERA accessories';
+}
+function route(){
+  var h = location.hash;
+  if (h.indexOf('#product/') === 0){
+    var id = decodeURIComponent(h.slice(9));
+    var p = state.products.filter(function(x){ return String(x.id) === id && x.active !== false; })[0];
+    if (p){ showProduct(p); return; }
+  }
+  document.title = 'SERA accessories';
+  hideDetail();
+}
+function buildDetail(){
+  detail = el('div', {class: 'pd', hidden: true, role: 'dialog', 'aria-modal': 'true', 'aria-label': 'تفاصيل المنتج'});
+  document.body.append(detail);
+  window.addEventListener('hashchange', function(){ inSite = true; route(); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && detail && !detail.hidden && !drawer.classList.contains('open')) closeDetail();
+  });
+}
+
 /* ---------- page ---------- */
 function productCard(p){
   var pr = fmtPrice(p.price);
-  var media = el('div', {class: 'media'},
+  var link = '#product/' + encodeURIComponent(p.id);
+  var media = el('a', {class: 'media', href: link, 'aria-label': p.name},
     p.img ? el('img', {src: p.img, alt: p.name, loading: 'lazy'}) : el('div', {class: 'ph', 'aria-hidden': 'true', text: 'SERA'}),
     p.soldOut ? el('span', {class: 'tag sold', text: 'خلصت'}) : null);
   var add = el('button', {class: 'add', type: 'button', disabled: !!p.soldOut, text: p.soldOut ? 'خلصت' : 'أضيفي للحقيبة', onclick: function(){ addToCart(p); }});
   var node = el('li', {class: 'card'}, media, el('div', {class: 'det'},
     p.cat ? el('span', {class: 'cat', text: p.cat}) : null,
-    el('h3', {class: 'name', text: p.name}),
+    el('h3', {class: 'name'}, el('a', {href: link, text: p.name})),
     el('div', {class: 'row-b'}, pr ? el('span', {class: 'price'}, pr + ' ', el('small', {text: 'ج.م'})) : el('span'), add)));
   return node;
 }
@@ -228,6 +305,7 @@ function render(){
   app.append(shell);
   renderGrid();
   updateCart();
+  route();
 }
 
 async function loadRemote(){
@@ -236,12 +314,13 @@ async function loadRemote(){
     var settingsRes = await sb.from('site_settings').select('key,value');
     if (!settingsRes.error && settingsRes.data) settingsRes.data.forEach(function(row){ state.settings[row.key] = row.value; });
     var productsRes = await sb.from('products').select('*').order('created_at', {ascending:true});
-    if (!productsRes.error && productsRes.data && productsRes.data.length) state.products = productsRes.data.map(function(p){ return {id:p.id,name:p.name,cat:p.category,price:p.price,img:p.image_url || '',soldOut:!!p.sold_out,active:p.active !== false}; });
+    if (!productsRes.error && productsRes.data && productsRes.data.length) state.products = productsRes.data.map(function(p){ var im = (p.images && p.images.length) ? p.images : (p.image_url ? [p.image_url] : []); return {id:p.id,name:p.name,cat:p.category,price:p.price,img:im[0] || '',images:im,desc:p.description || '',soldOut:!!p.sold_out,active:p.active !== false}; });
   } catch(e) { console.warn('Remote data unavailable; using local defaults.', e); }
   state.settings.whatsapp = normNum(state.settings.whatsapp);
   render();
 }
 buildDrawer();
 document.body.append(backdrop, drawer);
+buildDetail();
 loadRemote();
 })();

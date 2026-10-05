@@ -131,3 +131,27 @@ button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(-
 
 img{max-width:100%}
 [hidden]{display:none!important}
+
+/* ---------- صفحة تفاصيل المنتج ---------- */
+a.media{display:block}
+.name a{color:inherit;text-decoration:none}.name a:hover{color:var(--gold)}
+.pd{position:fixed;inset:0;z-index:40;background:var(--ivory);overflow-y:auto;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.pd[hidden]{display:none}
+.pd-in{max-width:1000px;margin:0 auto;padding:12px 20px 48px}
+.pd-back{background:none;border:0;color:var(--gold);font:700 .9375rem var(--font-ar);padding:10px 0;margin-bottom:8px}
+.pd-grid{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:start}
+.pd-main{position:relative;aspect-ratio:4/5;border-radius:18px;overflow:hidden;background:#F4E7E1;touch-action:pan-y}
+.pd-main img{width:100%;height:100%;object-fit:cover;display:block}
+.pd-nav{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;padding:0 0 4px;border:0;border-radius:50%;background:rgba(255,255,255,.88);color:var(--ink);font-size:1.6rem;line-height:1}
+.pd-nav.prev{right:10px}.pd-nav.next{left:10px}
+.pd-thumbs{display:flex;gap:8px;margin-top:10px;overflow-x:auto;padding-bottom:4px}
+.pd-thumbs button{flex:none;width:64px;height:64px;padding:0;border:2px solid transparent;border-radius:10px;overflow:hidden;background:none;opacity:.75}
+.pd-thumbs button[aria-current="true"]{border-color:var(--gold);opacity:1}
+.pd-thumbs img{width:100%;height:100%;object-fit:cover;display:block}
+.pd-cat{color:var(--gold);font-weight:700;font-size:.8125rem}
+.pd-info h1{font-size:1.75rem;line-height:1.3;margin:.2em 0 .3em}
+.pd-price{font:600 1.5rem var(--font-num);color:var(--gold)}.pd-price small{font:600 .9rem var(--font-ar)}
+.pd-desc{white-space:pre-line;color:var(--muted);margin:16px 0 22px}
+.pd-btns{display:flex;flex-direction:column;gap:10px;margin-top:18px}
+.pd-btns .btn{width:100%;cursor:pointer}.pd-btns .btn:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:760px){.pd-grid{grid-template-columns:1fr;gap:20px}}
