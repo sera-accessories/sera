@@ -33,10 +33,10 @@
         <label>اسم المنتج<input id="name"></label>
         <label>القسم<input id="category"></label>
         <label>السعر<input id="price" type="number" min="0"></label>
-        <label>صورة المنتج<input id="image_file" type="file" accept="image/*"></label>
-        <img id="preview" alt="" hidden style="width:120px;height:120px;object-fit:cover;border-radius:12px;margin-bottom:8px">
+        <label>وصف المنتج<textarea id="description" placeholder="الخامة، المقاس، طريقة العناية، أي تفاصيل..."></textarea></label>
+        <label>صور المنتج (تقدر تختار أكتر من صورة مرة واحدة)<input id="image_file" type="file" accept="image/*" multiple></label>
+        <div id="thumbs" class="thumbs"></div>
         <small id="uploadMsg"></small>
-        <input type="hidden" id="image_url">
         <label class="check"><input id="sold_out" type="checkbox"> خلصت</label>
         <label class="check"><input id="active" type="checkbox" checked> ظاهرة للعملاء</label>
         <div class="row"><button id="saveProduct">حفظ المنتج</button><button id="clearForm" class="secondary">مسح</button></div>
