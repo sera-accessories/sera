@@ -33,7 +33,10 @@
         <label>اسم المنتج<input id="name"></label>
         <label>القسم<input id="category"></label>
         <label>السعر<input id="price" type="number" min="0"></label>
-        <label>رابط الصورة<input id="image_url" placeholder="images/products/item.jpg أو رابط مباشر"></label>
+        <label>صورة المنتج<input id="image_file" type="file" accept="image/*"></label>
+        <img id="preview" alt="" hidden style="width:120px;height:120px;object-fit:cover;border-radius:12px;margin-bottom:8px">
+        <small id="uploadMsg"></small>
+        <input type="hidden" id="image_url">
         <label class="check"><input id="sold_out" type="checkbox"> خلصت</label>
         <label class="check"><input id="active" type="checkbox" checked> ظاهرة للعملاء</label>
         <div class="row"><button id="saveProduct">حفظ المنتج</button><button id="clearForm" class="secondary">مسح</button></div>
