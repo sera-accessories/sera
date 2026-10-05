@@ -1,20 +1,46 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="robots" content="noindex, nofollow">
-  <title>لوحة تحكم SERA</title>
-  <link rel="icon" href="../images/favicon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Jost:wght@400;500&display=swap">
-  <link rel="stylesheet" href="admin.css">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SERA Admin</title>
+<link rel="stylesheet" href="admin.css">
+<script src="../supabase-config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-  <div id="root"></div>
-  <noscript>لوحة التحكم محتاجة JavaScript عشان تشتغل.</noscript>
-  <script src="../js/products.js"></script>
-  <script src="admin.js"></script>
-</body>
-</html>
+<main class="wrap">
+  <section id="login" class="panel">
+    <h1>SERA Admin</h1><p>دخول لوحة التحكم</p>
+    <input id="email" type="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Password">
+    <button id="loginBtn">دخول</button>
+    <small id="loginMsg"></small>
+    <div class="hint">لوحة التحكم تحتاج Supabase. بعد إنشاء الحساب، سجّل الدخول هنا.</div>
+  </section>
+  <section id="dashboard" hidden>
+    <header class="top"><div><h1>لوحة تحكم SERA</h1><p>إدارة المنتجات والمعلومات الظاهرة للعملاء</p></div><button id="logoutBtn" class="secondary">خروج</button></header>
+    <div class="grid2">
+      <section class="panel"><h2>إعدادات المتجر</h2>
+        <label>واتساب<input id="whatsapp"></label>
+        <label>Instagram<input id="instagram"></label>
+        <label>العنوان الرئيسي<input id="tagline"></label>
+        <label>وصف الصفحة<textarea id="heroText"></textarea></label>
+        <label>الشريط العلوي<input id="banner"></label>
+        <button id="saveSettings">حفظ الإعدادات</button>
+      </section>
+      <section class="panel"><h2>إضافة / تعديل منتج</h2>
+        <input type="hidden" id="pid">
+        <label>اسم المنتج<input id="name"></label>
+        <label>القسم<input id="category"></label>
+        <label>السعر<input id="price" type="number" min="0"></label>
+        <label>رابط الصورة<input id="image_url" placeholder="images/products/item.jpg أو رابط مباشر"></label>
+        <label class="check"><input id="sold_out" type="checkbox"> خلصت</label>
+        <label class="check"><input id="active" type="checkbox" checked> ظاهرة للعملاء</label>
+        <div class="row"><button id="saveProduct">حفظ المنتج</button><button id="clearForm" class="secondary">مسح</button></div>
+      </section>
+    </div>
+    <section class="panel"><div class="sectionHead"><h2>المنتجات</h2><span id="status"></span></div><div id="products"></div></section>
+  </section>
+</main>
+<script src="admin.js"></script>
+</body></html>
