@@ -1,13 +1,15 @@
 (function(){
-  const configured=!!(window.SERA_SUPABASE_URL&&window.SERA_SUPABASE_ANON_KEY&&window.supabase);
-  const login=document.getElementById('login'), dash=document.getElementById('dashboard'), msg=document.getElementById('loginMsg');
-  if(!configured){msg.textContent='أضف بيانات Supabase داخل supabase-config.js أولاً.';document.getElementById('loginBtn').disabled=true;return;}
+  const login=document.getElementById('login'), dash=document.getElementById('dashboard'), msg=document.getElementById('loginMsg'), btn=document.getElementById('loginBtn');
+  if(!window.SERA_SUPABASE_URL||!window.SERA_SUPABASE_ANON_KEY){msg.textContent='ملف supabase-config.js مش متحمّل أو فاضي. اتأكد إنه موجود في الفولدر الرئيسي للموقع.';btn.disabled=true;console.error('SERA: supabase-config.js not loaded');return;}
+  if(!window.supabase){msg.textContent='مكتبة Supabase ما اتحمّلتش (النت أو الـ CDN). اعمل Refresh وجرّب تاني.';btn.disabled=true;console.error('SERA: supabase-js CDN not loaded');return;}
   const db=window.supabase.createClient(window.SERA_SUPABASE_URL,window.SERA_SUPABASE_ANON_KEY);
   const $=id=>document.getElementById(id);
   async function boot(){const {data:{session}}=await db.auth.getSession(); if(session) show();}
   function show(){login.hidden=true;dash.hidden=false;loadSettings();loadProducts();}
-  function fail(e){msg.textContent=e?.message||String(e);}
-  $('loginBtn').onclick=async()=>{msg.textContent='...';const {error}=await db.auth.signInWithPassword({email:$('email').value,password:$('password').value});if(error)return fail(error);show();};
+  function fail(e){const m=e?.message||String(e);const map=[[/invalid login credentials/i,'الإيميل أو الباسورد غلط، أو المستخدم مش موجود في Supabase > Authentication > Users.'],[/email not confirmed/i,'الإيميل لسه متأكدش. من Supabase افتح المستخدم واعمل Confirm، أو أنشئه مع Auto Confirm.'],[/failed to fetch|networkerror|load failed/i,'مش قادر يوصل لـ Supabase. اتأكد من الـ URL في supabase-config.js ومن إن المشروع مش Paused.'],[/invalid api key|apikey/i,'الـ anon key غلط في supabase-config.js.']];const hit=map.find(([r])=>r.test(m));msg.textContent=hit?hit[1]:m;console.error('SERA login error:',e);}
+  async function doLogin(){msg.textContent='جاري الدخول...';btn.disabled=true;try{const {error}=await db.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error)throw error;msg.textContent='';show();}catch(e){fail(e);}finally{btn.disabled=false;}}
+  btn.onclick=doLogin;
+  ['email','password'].forEach(id=>$(id).addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();}));
   $('logoutBtn').onclick=async()=>{await db.auth.signOut();location.reload();};
   async function loadSettings(){const {data,error}=await db.from('site_settings').select('key,value');if(error)return alert(error.message);(data||[]).forEach(r=>{if($(r.key))$(r.key).value=r.value||'';});}
   $('saveSettings').onclick=async()=>{const keys=['whatsapp','instagram','tagline','heroText','banner'];for(const key of keys){const {error}=await db.from('site_settings').upsert({key,value:$(key).value},{onConflict:'key'});if(error)return alert(error.message);} alert('تم حفظ الإعدادات');};
