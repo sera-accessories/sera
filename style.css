@@ -155,3 +155,7 @@ a.media{display:block}
 .pd-btns{display:flex;flex-direction:column;gap:10px;margin-top:18px}
 .pd-btns .btn{width:100%;cursor:pointer}.pd-btns .btn:disabled{opacity:.5;cursor:not-allowed}
 @media(max-width:760px){.pd-grid{grid-template-columns:1fr;gap:20px}}
+
+/* زرار الحذف في الحقيبة */
+.rm{display:inline-grid;place-items:center;width:36px;height:36px;padding:0;border-radius:50%}
+.rm:hover{background:#F8E4E3;color:var(--danger)}

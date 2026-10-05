@@ -84,6 +84,7 @@ function cats(){
 function logo(file, alt){ return el('img', {src: 'images/' + file, alt: alt || '', width: 1240, height: 980}); }
 var CART_SVG = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l1 13H5L6 7z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>';
 var CLOSE_SVG = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+var TRASH_SVG = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16"/><path d="M10 11v6M14 11v6"/><path d="M6 7l1 13h10l1-13"/><path d="M9 7V4h6v3"/></svg>';
 var SEARCH_SVG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>';
 function svgEl(str){ var d = document.createElement('div'); d.innerHTML = str; return d.firstChild; }
 
@@ -121,7 +122,7 @@ function updateCart(){
         el('p', {class: 'ctitle', text: item.name}),
         item.price ? el('span', {class: 'price'}, fmtPrice(item.price) + ' ', el('small', {text: 'ج.م'})) : null,
         el('div', {class: 'cact'}, el('div', {class: 'qty'}, minus, el('span', {text: String(item.qty)}), plus),
-          el('button', {class: 'rm', type: 'button', text: 'شيليه', onclick: function(){ cart.splice(cart.indexOf(item), 1); updateCart(); }})))));
+          el('button', {class: 'rm', type: 'button', 'aria-label': 'حذف ' + item.name, title: 'حذف', onclick: function(){ cart.splice(cart.indexOf(item), 1); updateCart(); }}, svgEl(TRASH_SVG))))));
     });
   }
   var link = orderLink();
@@ -289,14 +290,14 @@ function render(){
       el('div', {}, el('a', {class: 'btn', href: '#products', text: 'اختاري هديتك'}))),
     el('div', {class: 'promo-art'}, logo('logo-white.svg', '')))));
   var links = [];
-  if (base) links.push(el('a', {href: base, target: '_blank', rel: 'noopener', text: 'اطلبي عبر واتساب'}));
+  if (base) links.push(el('a', {href: base, target: '_blank', rel: 'noopener'}, 'واتساب: ', el('span', {class: 'num', text: '+' + s.whatsapp})));
   if (s.instagram) links.push(el('a', {href: 'https://instagram.com/' + encodeURIComponent(s.instagram), target: '_blank', rel: 'noopener', text: 'إنستجرام'}));
   var foot = el('footer', {class: 'footer'}, el('div', {class: 'wrap'},
     el('div', {class: 'fgrid'},
       el('div', {}, el('div', {class: 'brand'}, logo('logo-gold-light.svg', 'SERA accessories')), el('p', {class: 'fnote', text: 'إكسسوارات يومية بلمسة ناعمة، لتكمّل كل تفاصيلك الجميلة.'})),
       el('div', {}, el('h3', {text: 'تسوّقي'}), el('nav', {class: 'flinks'}, el('a', {href: '#products', text: 'المنتجات'}), el('a', {href: '#about', text: 'الهدايا'}))),
       el('div', {}, el('h3', {text: 'تواصلي معانا'}), el('nav', {class: 'flinks'}, links,
-        s.whatsapp ? el('span', {style: 'font-size:.8125rem;color:#EEE0DA'}, 'واتساب: ', el('span', {class: 'num', text: '+' + s.whatsapp})) : null))),
+        null))),
     el('div', {class: 'fbase'}, el('span', {text: '© 2026 SERA accessories — كل الحقوق محفوظة'}),
       s.instagram ? el('span', {class: 'num', text: '@' + s.instagram}) : null)));
   var shell = el('div', {class: 'shell'});
